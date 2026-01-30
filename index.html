@@ -3,347 +3,704 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation MinIO - Installation avec Docker</title>
+    <meta name="description" content="Guide complet d'installation et de configuration de MinIO avec Docker. Documentation technique complète avec commandes et bonnes pratiques.">
+    <meta name="keywords" content="MinIO, Docker, stockage objet, S3, installation, configuration, tutoriel">
+    <meta name="author" content="Toyigbe Maxime DOSSOU">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Documentation MinIO - Installation avec Docker">
+    <meta property="og:description" content="Guide complet pour installer et configurer MinIO avec Docker">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Documentation MinIO - Installation avec Docker">
+    
+    <title>MinIO avec Docker - Guide d'Installation Complet | Documentation</title>
+    
     <style>
+        :root {
+            --primary: #C72C48;
+            --primary-light: #E63946;
+            --primary-dark: #A41F35;
+            --secondary: #1D3557;
+            --accent: #457B9D;
+            --success: #2A9D8F;
+            --warning: #E9C46A;
+            --bg-light: #F8F9FA;
+            --bg-code: #1e1e1e;
+            --text-primary: #1D3557;
+            --text-secondary: #6C757D;
+            --border: #E0E5EA;
+            --shadow: rgba(29, 53, 87, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background-color: #ffffff;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-
+        /* Header */
         header {
-            background: linear-gradient(135deg, #c94b4b 0%, #4b134f 100%);
-            color: white;
-            padding: 40px;
+            background: #FFFFFF;
+            color: var(--text-primary);
+            padding: 4rem 2rem 3rem;
             text-align: center;
+            border-bottom: 1px solid var(--border);
         }
 
         header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -1px;
+            color: var(--secondary);
+        }
+
+        header h1 span {
+            color: var(--primary);
         }
 
         header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
+        /* Navigation */
         nav {
-            background: #f8f9fa;
-            padding: 20px 40px;
-            border-bottom: 2px solid #e9ecef;
+            background: var(--secondary);
+            border-bottom: none;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px var(--shadow);
         }
 
-        nav h2 {
-            color: #4b134f;
-            margin-bottom: 15px;
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0;
         }
 
         nav ul {
             list-style: none;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            justify-content: center;
         }
 
         nav a {
-            color: #667eea;
+            color: rgba(255, 255, 255, 0.85);
             text-decoration: none;
-            padding: 8px 15px;
+            padding: 1rem 1.5rem;
             display: block;
-            border-radius: 5px;
+            font-size: 0.95rem;
+            font-weight: 500;
             transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
         }
 
-        nav a:hover {
-            background: #667eea;
+        nav a:hover, nav a:focus {
+            background: rgba(255, 255, 255, 0.1);
             color: white;
-            transform: translateX(5px);
+            border-bottom-color: var(--primary);
+            outline: none;
         }
 
+        /* Main Content */
         main {
-            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
         }
 
         section {
-            margin-bottom: 50px;
+            margin-bottom: 4rem;
+            scroll-margin-top: 80px;
         }
 
         h2 {
-            color: #4b134f;
-            font-size: 2em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+            color: var(--secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         h3 {
-            color: #667eea;
-            font-size: 1.5em;
-            margin: 25px 0 15px 0;
+            color: var(--primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
         }
 
         p {
-            margin-bottom: 15px;
-            text-align: justify;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Code Blocks */
+        .code-wrapper {
+            position: relative;
+            margin: 1.5rem 0;
         }
 
         pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
+            background: var(--bg-code);
+            color: #d4d4d4;
+            padding: 1.5rem;
+            padding-right: 3.5rem;
             border-radius: 8px;
             overflow-x: auto;
-            margin: 15px 0;
-            border-left: 4px solid #667eea;
+            margin: 0;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 2px 8px var(--shadow);
         }
 
         code {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.95em;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #d4d4d4;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .copy-icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: #E8F4F8;
+            border-left: 4px solid var(--accent);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 6px;
+        }
+
+        .info-box strong {
+            color: var(--accent);
         }
 
         .alert {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
+            background: #FEF6E8;
+            border-left: 4px solid var(--warning);
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+            border-radius: 6px;
         }
 
         .alert strong {
-            color: #856404;
-        }
-
-        .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #2196F3;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-
-        .command-list {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        ul {
-            margin-left: 30px;
-            margin-bottom: 15px;
-        }
-
-        li {
-            margin-bottom: 8px;
+            color: #9A7A3A;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .credentials {
-            background: #e8f5e9;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 4px solid #4caf50;
-            margin: 15px 0;
+            background: #E8F5F3;
+            padding: 1.25rem;
+            border-radius: 6px;
+            border-left: 4px solid var(--success);
+            margin: 1.5rem 0;
         }
 
-        footer {
-            background: #2d2d2d;
-            color: white;
-            text-align: center;
-            padding: 30px;
+        .credentials p {
+            color: var(--text-primary);
         }
 
+        .credentials strong {
+            color: var(--success);
+        }
+
+        /* Lists */
+        ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        li strong {
+            color: var(--primary);
+        }
+
+        /* Buttons */
         .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background: #667eea;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            background: var(--primary);
             color: white;
             text-decoration: none;
-            border-radius: 5px;
-            margin: 10px 5px;
-            transition: all 0.3s ease;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px var(--shadow);
         }
 
-        .btn:hover {
-            background: #764ba2;
+        .btn:hover, .btn:focus {
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px var(--shadow);
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
         }
 
+        /* Command List */
+        .command-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .command-item {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .command-item h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+        }
+
+        /* Feature Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            padding: 2.5rem 2rem;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.85);
+            margin: 0;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
+            header {
+                padding: 2.5rem 1.5rem 2rem;
+            }
+
             header h1 {
-                font-size: 1.8em;
+                font-size: 2rem;
+            }
+
+            header p {
+                font-size: 1rem;
             }
 
             main {
-                padding: 20px;
-            }
-
-            nav {
-                padding: 20px;
+                padding: 2rem 1rem;
             }
 
             nav ul {
+                flex-direction: column;
+            }
+
+            nav a {
+                border-bottom: none;
+                border-left: 3px solid transparent;
+            }
+
+            nav a:hover, nav a:focus {
+                border-left-color: var(--primary);
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .features {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            z-index: 1000;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Print Styles */
+        @media print {
+            header, nav, footer, .btn {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+
+            pre {
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📦 Documentation MinIO</h1>
-            <p>Installation et Configuration avec Docker</p>
-        </header>
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
-        <nav>
-            <h2>📑 Table des matières</h2>
+    <header>
+        <h1><span>📦 MinIO</span> avec Docker</h1>
+        <p>Guide complet d'installation et de configuration</p>
+    </header>
+
+    <nav role="navigation" aria-label="Navigation principale">
+        <div class="nav-container">
             <ul>
-                <li><a href="#prerequisites">Prérequis - Configuration de Docker</a></li>
-                <li><a href="#installation">Installation de MinIO</a></li>
-                <li><a href="#access">Accès à l'interface web</a></li>
-                <li><a href="#commands">Commandes utiles</a></li>
-                <li><a href="#about">À propos de MinIO</a></li>
+                <li><a href="#prerequisites">Prérequis</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#access">Accès</a></li>
+                <li><a href="#commands">Commandes</a></li>
+                <li><a href="#about">À propos</a></li>
             </ul>
-        </nav>
+        </div>
+    </nav>
 
-        <main>
-            <section id="prerequisites">
-                <h2>🔧 Prérequis - Configuration de Docker</h2>
+    <main id="main-content">
+        <section id="prerequisites">
+            <h2><span aria-hidden="true">🔧</span> Prérequis Docker</h2>
 
-                <h3>Créer le groupe Docker</h3>
-                <p>Cette commande crée un nouveau groupe système appelé "docker" qui permettra aux utilisateurs d'exécuter des commandes Docker sans sudo.</p>
-                <pre><code>sudo groupadd docker</code></pre>
+            <p>Avant d'installer MinIO, configurez Docker pour permettre l'exécution de commandes sans privilèges sudo.</p>
 
-                <h3>Ajouter l'utilisateur actuel au groupe Docker</h3>
-                <p>Ajoute votre utilisateur ($USER) au groupe docker pour lui donner les permissions nécessaires.</p>
-                <pre><code>sudo usermod -aG docker $USER</code></pre>
+            <div class="command-grid">
+                <div class="command-item">
+                    <h3>1. Créer le groupe Docker</h3>
+                    <p>Création d'un groupe système permettant l'exécution de commandes Docker.</p>
+                    <pre><code>sudo groupadd docker</code></pre>
+                </div>
 
-                <h3>Activer le nouveau groupe</h3>
-                <p>Active le groupe docker pour la session actuelle sans avoir besoin de se déconnecter.</p>
-                <pre><code>newgrp docker
+                <div class="command-item">
+                    <h3>2. Ajouter l'utilisateur au groupe</h3>
+                    <p>Attribution des permissions Docker à votre utilisateur.</p>
+                    <pre><code>sudo usermod -aG docker $USER</code></pre>
+                </div>
+
+                <div class="command-item">
+                    <h3>3. Activer le groupe</h3>
+                    <p>Activation des nouvelles permissions sans déconnexion.</p>
+                    <pre><code>newgrp docker
 exec su -l $USER</code></pre>
-            </section>
-
-            <section id="installation">
-                <h2>⚙️ Installation de MinIO</h2>
-
-                <h3>Télécharger l'image Docker de MinIO</h3>
-                <p>Cette commande télécharge l'image officielle MinIO depuis le registre JumpServer (version spécifique du 11 juin 2024).</p>
-                <pre><code>docker pull jumpserver/minio:RELEASE.2024-06-11T03-13-30Z</code></pre>
-
-                <h3>Démarrer le conteneur MinIO</h3>
-                <p>Lance un conteneur MinIO en mode détaché avec les configurations suivantes :</p>
-                <ul>
-                    <li><strong>-d</strong> : Mode détaché (arrière-plan)</li>
-                    <li><strong>--name minio-server</strong> : Nom du conteneur</li>
-                    <li><strong>-p 9000:9000</strong> : Port API MinIO</li>
-                    <li><strong>-p 9001:9001</strong> : Port console web MinIO</li>
-                    <li><strong>-e MINIO_ROOT_USER</strong> : Nom d'utilisateur administrateur</li>
-                    <li><strong>-e MINIO_ROOT_PASSWORD</strong> : Mot de passe administrateur</li>
-                    <li><strong>-v minio_data:/data</strong> : Volume persistant pour stocker les données</li>
-                    <li><strong>server /data</strong> : Démarre le serveur avec le répertoire de données</li>
-                    <li><strong>--console-address ":9001"</strong> : Adresse de la console web</li>
-                </ul>
-                <pre><code>docker run -d --name minio-server \
--p 9000:9000 -p 9001:9001 \
--e MINIO_ROOT_USER=minioadmin \
--e MINIO_ROOT_PASSWORD=minioadmin \
--v minio_data:/data \
-c71d3ceb9899 \
-server /data --console-address ":9001"</code></pre>
-            </section>
-
-            <section id="access">
-                <h2>🌐 Accès à l'interface web MinIO</h2>
-
-                <h3>URL de connexion</h3>
-                <p>Accédez à la console web MinIO via votre navigateur :</p>
-                <div class="info-box">
-                    <strong>URL :</strong> <a href="http://127.0.0.1:9001" target="_blank">http://127.0.0.1:9001</a>
                 </div>
+            </div>
+        </section>
 
-                <h3>Identifiants de connexion par défaut</h3>
-                <div class="credentials">
-                    <p><strong>Username:</strong> minioadmin</p>
-                    <p><strong>Password:</strong> minioadmin</p>
-                </div>
+        <section id="installation">
+            <h2><span aria-hidden="true">⚙️</span> Installation MinIO</h2>
 
-                <div class="alert">
-                    <strong>⚠️ Attention :</strong> Changez ces identifiants par défaut en production pour des raisons de sécurité !
-                </div>
+            <h3>Télécharger l'image Docker</h3>
+            <p>Récupération de l'image officielle MinIO depuis le registre JumpServer.</p>
+            <pre><code>docker pull jumpserver/minio:RELEASE.2024-06-11T03-13-30Z</code></pre>
 
-                <a href="http://127.0.0.1:9001" target="_blank" class="btn">🚀 Accéder à MinIO</a>
-            </section>
+            <h3>Démarrer le conteneur</h3>
+            <p>Lancement de MinIO avec la configuration suivante :</p>
+            
+            <ul>
+                <li><strong>Mode détaché</strong> : Exécution en arrière-plan</li>
+                <li><strong>Ports</strong> : 9000 (API) et 9001 (Console web)</li>
+                <li><strong>Identifiants</strong> : minioadmin / minioadmin</li>
+                <li><strong>Stockage persistant</strong> : Volume Docker dédié</li>
+            </ul>
 
-            <section id="commands">
-                <h2>💻 Commandes utiles</h2>
+            <pre><code>docker run -d --name minio-server \
+  -p 9000:9000 -p 9001:9001 \
+  -e MINIO_ROOT_USER=minioadmin \
+  -e MINIO_ROOT_PASSWORD=minioadmin \
+  -v minio_data:/data \
+  jumpserver/minio:RELEASE.2024-06-11T03-13-30Z \
+  server /data --console-address ":9001"</code></pre>
+        </section>
 
-                <div class="command-list">
-                    <h3>Vérifier que le conteneur fonctionne</h3>
+        <section id="access">
+            <h2><span aria-hidden="true">🌐</span> Accès à MinIO</h2>
+
+            <div class="info-box">
+                <p><strong>URL de la console :</strong> <a href="http://127.0.0.1:9001" target="_blank" rel="noopener">http://127.0.0.1:9001</a></p>
+            </div>
+
+            <div class="credentials">
+                <p><strong>Nom d'utilisateur :</strong> minioadmin</p>
+                <p><strong>Mot de passe :</strong> minioadmin</p>
+            </div>
+
+            <div class="alert">
+                <strong><span aria-hidden="true">⚠️</span> Important</strong>
+                <p>Modifiez immédiatement ces identifiants par défaut en environnement de production pour garantir la sécurité de votre installation.</p>
+            </div>
+
+            <a href="http://127.0.0.1:9001" target="_blank" rel="noopener" class="btn">
+                <span aria-hidden="true">🚀</span> Ouvrir la console MinIO
+            </a>
+        </section>
+
+        <section id="commands">
+            <h2><span aria-hidden="true">💻</span> Commandes essentielles</h2>
+
+            <div class="command-grid">
+                <div class="command-item">
+                    <h3>Vérifier le statut</h3>
                     <pre><code>docker ps | grep minio-server</code></pre>
+                </div>
 
-                    <h3>Voir les logs du conteneur</h3>
+                <div class="command-item">
+                    <h3>Consulter les logs</h3>
                     <pre><code>docker logs minio-server</code></pre>
+                </div>
 
-                    <h3>Suivre les logs en temps réel</h3>
+                <div class="command-item">
+                    <h3>Logs en temps réel</h3>
                     <pre><code>docker logs -f minio-server</code></pre>
+                </div>
 
+                <div class="command-item">
                     <h3>Arrêter le conteneur</h3>
                     <pre><code>docker stop minio-server</code></pre>
+                </div>
 
+                <div class="command-item">
                     <h3>Redémarrer le conteneur</h3>
                     <pre><code>docker start minio-server</code></pre>
+                </div>
 
+                <div class="command-item">
+                    <h3>Redémarrage complet</h3>
+                    <pre><code>docker restart minio-server</code></pre>
+                </div>
+
+                <div class="command-item">
                     <h3>Supprimer le conteneur</h3>
                     <pre><code>docker rm -f minio-server</code></pre>
+                </div>
 
-                    <h3>Supprimer le volume de données</h3>
+                <div class="command-item">
+                    <h3>Supprimer le volume</h3>
                     <pre><code>docker volume rm minio_data</code></pre>
+                </div>
 
-                    <h3>Inspecter le conteneur</h3>
+                <div class="command-item">
+                    <h3>Inspecter la configuration</h3>
                     <pre><code>docker inspect minio-server</code></pre>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section id="about">
-                <h2>ℹ️ À propos de MinIO</h2>
-                <p>MinIO est un serveur de stockage d'objets haute performance compatible avec l'API Amazon S3. Il est parfait pour :</p>
-                <ul>
-                    <li>📁 Stockage de fichiers et d'objets</li>
-                    <li>💾 Backup et archivage</li>
-                    <li>☁️ Stockage de données pour applications cloud-native</li>
-                    <li>📊 Data lakes et analytics</li>
-                </ul>
+        <section id="about">
+            <h2><span aria-hidden="true">ℹ️</span> À propos de MinIO</h2>
+            
+            <p>MinIO est une solution de stockage d'objets haute performance, open source et compatible avec l'API Amazon S3. Conçu pour les environnements cloud-native, MinIO offre scalabilité et fiabilité.</p>
 
-                <div class="info-box">
-                    <p><strong>Licence :</strong> MinIO est distribué sous licence GNU AGPLv3.</p>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon" aria-hidden="true">📁</div>
+                    <h3>Stockage objet</h3>
+                    <p>Gestion efficace de fichiers et objets de toute taille</p>
                 </div>
-            </section>
-        </main>
 
-        <footer>
-            <p>&copy; 2025 Documentation MinIO | Créé avec ❤️ Toyigbe Maxime DOSSOU </p>
-        </footer>
-    </div>
+                <div class="feature-card">
+                    <div class="feature-icon" aria-hidden="true">💾</div>
+                    <h3>Backup & Archive</h3>
+                    <p>Solution idéale pour la sauvegarde et l'archivage de données</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon" aria-hidden="true">☁️</div>
+                    <h3>Cloud-Native</h3>
+                    <p>Optimisé pour les applications cloud modernes</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon" aria-hidden="true">📊</div>
+                    <h3>Data Analytics</h3>
+                    <p>Parfait pour les data lakes et l'analyse de données</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>Licence :</strong> MinIO est distribué sous licence GNU AGPLv3</p>
+                <p><strong>Compatibilité :</strong> API Amazon S3</p>
+                <p><strong>Performance :</strong> Jusqu'à 325 GiB/s de débit en lecture</p>
+            </div>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <p>&copy; 2025 Documentation MinIO | Créé par Toyigbe Maxime DOSSOU</p>
+    </footer>
+
+    <script>
+        // Add copy buttons to all code blocks
+        document.addEventListener('DOMContentLoaded', function() {
+            const preElements = document.querySelectorAll('pre');
+            
+            preElements.forEach(pre => {
+                // Create wrapper
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-wrapper';
+                pre.parentNode.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+                
+                // Create copy button
+                const button = document.createElement('button');
+                button.className = 'copy-btn';
+                button.setAttribute('aria-label', 'Copier le code');
+                button.innerHTML = `
+                    <svg class="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Copier</span>
+                `;
+                
+                wrapper.appendChild(button);
+                
+                // Copy functionality
+                button.addEventListener('click', async function() {
+                    const code = pre.querySelector('code');
+                    const text = code ? code.textContent : pre.textContent;
+                    
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        
+                        // Success feedback
+                        button.classList.add('copied');
+                        button.innerHTML = `
+                            <svg class="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Copié !</span>
+                        `;
+                        
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            button.classList.remove('copied');
+                            button.innerHTML = `
+                                <svg class="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Copier</span>
+                            `;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Erreur lors de la copie:', err);
+                        button.innerHTML = `
+                            <svg class="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            <span>Erreur</span>
+                        `;
+                        
+                        setTimeout(() => {
+                            button.innerHTML = `
+                                <svg class="copy-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Copier</span>
+                            `;
+                        }, 2000);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
